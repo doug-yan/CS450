@@ -1,15 +1,38 @@
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <openssl/rsa.h>
+#include <time.h>
 
-int main()
+int main(int argc, char *argv[])
 {
+	clock_t begin, end;
+	double time_spent;
+	begin = clock();
+
 	RSA *key;
-	unsigned char rbuff[] = "RSA Clear Text";
-	unsigned char wbuff[256];
-	unsigned char exbuff[256];
-	int num,i;
+	unsigned char rbuff[4000];
+	unsigned char wbuff[4000];
+	unsigned char exbuff[4000];
+	int num,i, bufferCounter = 0;
 	static const char rnd_seed[] = "string to make the random number generator think it has entropy";
+
+	FILE *fp;
+	char *filename = argv[1];
+	fp = fopen(filename, "r");
+
+	if(fp == NULL)
+	{
+		printf("Error opening file. \n");
+		return 0;
+	}
+
+	char ch;
+	while( (ch = fgetc(fp) ) != EOF)
+	{
+		rbuff[bufferCounter] = ch;
+		bufferCounter++;
+	}
+	fclose(fp);
 
 	printf("Clear Text: %s\n",rbuff);
 
@@ -29,4 +52,8 @@ int main()
     	num = RSA_private_decrypt(sizeof(wbuff),wbuff,exbuff,key,RSA_PKCS1_PADDING);
 
     	RSA_free(key);
+
+   	end = clock();
+	time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
+	printf("Time spent: %f", time_spent);
 }

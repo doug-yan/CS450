@@ -1,12 +1,23 @@
 #include <openssl/des.h>
+#include <stdio.h>
 
 #define ENC 1
 #define DEC 0
 
-int main(argc[], *argv[3])
+int main(int argc[], char *argv[])
 {
+	if(argc != 3)
+	{
+		printf("Error in command line input.");
+		return 0;
+	}
+
 	int k;
-	long	in[2];
+	char in[1000];
+
+	//File io
+	FILE *fp;
+
 	static unsigned char cbc_key[8] = {0x01,0x23,0x45,0x67,0x89,0xab,0xcd,0xef};
 	des_key_schedule key;
 
